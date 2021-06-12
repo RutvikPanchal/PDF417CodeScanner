@@ -19,8 +19,6 @@
         <video id="video" width="300" style="border: 1px solid gray"></video>
     </div>
 
-    <img class="img" src="" width="300px" style="border: 1px solid gray" /><br />
-
     <button id = "startButton">Start</button>
     <button id = "stopButton">Stop</button>
     <button id = "changeButton">ChangeCamera</button>
@@ -54,8 +52,6 @@
 
             const codeReader = new ZXing.BrowserMultiFormatReader()
             console.log('ZXing PDF417 code reader initialized')
-
-            const img = document.getElementsByClassName('img')[0].cloneNode(true);
 
             document.getElementById('myFile').addEventListener('change', () => {
                 var files = document.getElementById('myFile').files;
@@ -124,12 +120,6 @@
                         break;
                     case 1:
                         CameraMode = 'environment';
-                        break;
-                    case 2:
-                        CameraMode = 'left';
-                        break;
-                    case 3:
-                        CameraMode = 'right';
                         break;
                 }
                 startCam();
