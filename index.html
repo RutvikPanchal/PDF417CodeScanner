@@ -5,19 +5,37 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body{
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
 </head>
 <body>
     <!-- <div id = "sourceSelectPanel">
         <select id = "sourceSelect"></select>
     </div> -->
     <div>
-        <video id="video" style="border: 1px solid gray"></video>
+        <video id="video" width="300" style="border: 1px solid gray"></video>
     </div>
 
     <img class="img" src="" width="300px" style="border: 1px solid gray" /><br />
 
     <button id = "startButton">Start</button>
-    <button id = "resetButton">Reset</button>
+    <button id = "stopButton">Stop</button>
+    <button id = "changeButton">ChangeCamera</button>
+
+    <br />
+    <br />
+
+    <button id = "clearButton">Clear Image</button>
+    <input type="file" id="myFile" name="filename" accept="image/png, image/jpeg">
+
+    <div id="preview">
+    </div>
+
+    <br />
+
     <button id = "decodeButton">Decode Image</button>
 
     <br />
@@ -34,40 +52,110 @@
         window.addEventListener('load', function () {
             const video = document.querySelector("#video");
 
-            const codeReader = new ZXing.BrowserPDF417Reader()
+            const codeReader = new ZXing.BrowserMultiFormatReader()
             console.log('ZXing PDF417 code reader initialized')
 
             const img = document.getElementsByClassName('img')[0].cloneNode(true);
 
-            document.getElementById('decodeButton').addEventListener('click', () => {
-                codeReader.decodeFromImage(img)
-                .then(result => {
-                    console.log(result);
-                    document.getElementById('resultImg').textContent = result.text;
-                })
-                .catch(err => {
-                    console.error(err);
-                    document.getElementById('resultImg').textContent = err;
-                });
+            document.getElementById('myFile').addEventListener('change', () => {
+                var files = document.getElementById('myFile').files;
+
+                if(files.length != 0){
+                    while(document.getElementById('preview').firstChild) {
+                        document.getElementById('preview').removeChild(document.getElementById('preview').firstChild);
+                    }
+
+                    const image = document.createElement('img');
+                    image.src = URL.createObjectURL(files[0]);
+                    image.width = 300;
+    
+                    document.getElementById('preview').appendChild(image);
+                }
             });
-            
-            if (navigator.mediaDevices.getUserMedia) { 
-                    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
-                        codeReader.decodeFromStream(stream, video, (result, err) => {
-                            if (result) {
-                                console.log(result)
-                                document.getElementById('result').textContent = result.text
-                            }
-                            if (err && !(err instanceof ZXing.NotFoundException)) {
-                                console.error(err)
-                                document.getElementById('result').textContent = err
-                            }
+
+            var streamObj;
+
+            document.getElementById('startButton').addEventListener('click', () => {
+                startCam();
+            });
+            function startCam(){
+                if (navigator.mediaDevices.getUserMedia) { 
+                        navigator.mediaDevices.getUserMedia({ video: { facingMode: CameraMode } }).then((stream) => {
+                            streamObj = stream;
+                            codeReader.decodeFromStream(stream, video, (result, err) => {
+                                if (result) {
+                                    console.log(result)
+                                    document.getElementById('result').textContent = result.text
+                                }
+                                if (err && !(err instanceof ZXing.NotFoundException)) {
+                                    console.error(err)
+                                    document.getElementById('result').textContent = err
+                                }
+                            });
+                        })
+                        .catch((err) => {
+                            console.log("Something went wrong!");
                         });
+                }
+            }
+
+            document.getElementById('stopButton').addEventListener('click', () => {
+                stopCam();
+            });
+            function stopCam(){
+                streamObj.getTracks().forEach((track) => {
+                    if (track.readyState == 'live' && track.kind === 'video') {
+                        track.stop();
+                    }
+                });
+            }
+
+            var counter = 0;
+            var CameraMode = 'user';
+            document.getElementById('changeButton').addEventListener('click', () => {
+                if(streamObj){
+                    stopCam();
+                }
+                counter = (counter + 1) % 4;
+                console.log(counter);
+                switch(counter){
+                    case 0:
+                        CameraMode = 'user';
+                        break;
+                    case 1:
+                        CameraMode = 'environment';
+                        break;
+                    case 2:
+                        CameraMode = 'left';
+                        break;
+                    case 3:
+                        CameraMode = 'right';
+                        break;
+                }
+                startCam();
+            });
+
+            document.getElementById('clearButton').addEventListener('click', () => {
+                while(document.getElementById('preview').firstChild) {
+                    document.getElementById('preview').removeChild(document.getElementById('preview').firstChild);
+                }
+            });
+
+            document.getElementById('decodeButton').addEventListener('click', () => {
+                if(document.getElementById('preview').firstChild.nodeType == Node.ELEMENT_NODE){
+                    var img = document.getElementById('preview').firstChild.cloneNode(true);
+                    
+                    codeReader.decodeFromImage(img)
+                    .then(result => {
+                        console.log(result);
+                        document.getElementById('resultImg').textContent = result.text;
                     })
-                    .catch((err) => {
-                        console.log("Something went wrong!");
+                    .catch(err => {
+                        console.error(err);
+                        document.getElementById('resultImg').textContent = err;
                     });
                 }
+            });
         });
     </script>
 </body>
