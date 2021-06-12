@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <div id = "sourceSelectPanel">
+        <select id = "sourceSelect"></select>
+    </div> -->
+    <div>
+        <video id="video" style="border: 1px solid gray"></video>
+    </div>
+
+    <!-- <img class="img" src="assets/test.jpg" width="300px" style="border: 1px solid gray" /><br /> -->
+
+    <button id = "startButton">Start</button>
+    <button id = "resetButton">Reset</button>
+    <button id = "decodeButton">Decode Image</button>
+
+    <br />
+    <br />
+
+    <label>Camera Decode :</label>
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <label>Image Decode :</label>
+    <div id="resultImg" style="margin-top: 20px;"></div>
+
+    <script src="vendor/zxing/index.js"></script>
+    <script>
+        window.addEventListener('load', function () {
+            const video = document.querySelector("#video");
+
+            const codeReader = new ZXing.BrowserPDF417Reader()
+            console.log('ZXing PDF417 code reader initialized')
+
+            const img = document.getElementsByClassName('img')[0].cloneNode(true);
+
+            document.getElementById('decodeButton').addEventListener('click', () => {
+                codeReader.decodeFromImage(img)
+                .then(result => {
+                    console.log(result);
+                    document.getElementById('resultImg').textContent = result.text;
+                })
+                .catch(err => {
+                    console.error(err);
+                    document.getElementById('resultImg').textContent = err;
+                });
+            });
+            
+            if (navigator.mediaDevices.getUserMedia) { 
+                    navigator.mediaDevices.getUserMedia({ video: true }).then((stream) => {
+                        codeReader.decodeFromStream(stream, video, (result, err) => {
+                            if (result) {
+                                console.log(result)
+                                document.getElementById('result').textContent = result.text
+                            }
+                            if (err && !(err instanceof ZXing.NotFoundException)) {
+                                console.error(err)
+                                document.getElementById('result').textContent = err
+                            }
+                        });
+                    })
+                    .catch((err) => {
+                        console.log("Something went wrong!");
+                    });
+                }
+        });
+    </script>
+</body>
+</html>
