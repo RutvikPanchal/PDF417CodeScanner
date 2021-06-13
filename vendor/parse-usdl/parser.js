@@ -114,7 +114,12 @@ const CodeToKey = {
     PAD: 'Permit IssueDate',
     PAE: 'Permit Restriction Code',
     PAF: 'Permit Endorsement Code',
-    ZVA: 'Court Restriction Code'
+    ZVA: 'Court Restriction Code',
+
+    // Extras
+    ZCB: 'Hair',
+    ZCC: 'Misc',
+    ZCD: 'Misc'
 }
 
 const lineSeparator = '\n'
