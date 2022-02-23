@@ -3,6 +3,8 @@ This is a simple web implementation of excellent ZXing image processing library 
 
 [ZXing-js/library](https://github.com/zxing-js/librar)
 
+demo: https://rutvikpanchal.github.io/PDF417Code_Scanner/
+
 ## What is ZXing
 
 > ZXing("zebra crossing") is an open-source, multi-format 1D/2D barcode image processing library implemented in Java, with ports to other languages.
