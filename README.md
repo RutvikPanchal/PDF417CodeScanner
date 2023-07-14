@@ -3,7 +3,7 @@ This is a simple web implementation of excellent ZXing image processing library 
 
 [ZXing-js/library](https://github.com/zxing-js/librar)
 
-demo: https://rutvikpanchal.github.io/PDF417Code_Scanner/
+demo: https://rutvikpanchal.github.io/PDF417CodeScanner/
 
 ## What is ZXing
 
